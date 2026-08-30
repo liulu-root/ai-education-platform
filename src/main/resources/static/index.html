@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智培云 · AI 教育运营平台</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="brand-mark">智</span>
+            <div><strong>智培云</strong><small>AI Learning Ops</small></div>
+        </div>
+        <nav>
+            <button class="nav-item active" data-target="overview"><span>◫</span>运营总览</button>
+            <button class="nav-item" data-target="tutor"><span>✦</span>智能助教</button>
+            <button class="nav-item" data-target="learning"><span>⌁</span>学习路径</button>
+            <button class="nav-item" data-target="grading"><span>✓</span>作业批改</button>
+            <button class="nav-item" data-target="risk"><span>△</span>风险预警</button>
+            <button class="nav-item" data-target="audit"><span>◎</span>AI 审计</button>
+        </nav>
+        <div class="sidebar-foot">
+            <span class="status-dot"></span>
+            <div><strong>演示环境</strong><small>Mock AI · H2 · 内存向量</small></div>
+        </div>
+    </aside>
+
+    <main>
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">未来技能培训中心</p>
+                <h1 id="page-title">运营总览</h1>
+            </div>
+            <div class="profile"><span>LX</span><div><strong>林晓</strong><small>学习者 · learner-001</small></div></div>
+        </header>
+
+        <section id="overview" class="page active">
+            <div class="hero">
+                <div>
+                    <p class="eyebrow light">AUGMENTED LEARNING</p>
+                    <h2>让每一次学习，都有数据与智能的回响。</h2>
+                    <p>知识检索、个性化路径、形成性评价和 AI 治理集中在同一条业务链路。</p>
+                </div>
+                <div class="hero-orb"><span>AI</span></div>
+            </div>
+            <div class="metric-grid">
+                <article class="metric"><span>课程</span><strong id="metric-courses">—</strong><small>已发布课程</small></article>
+                <article class="metric"><span>报名</span><strong id="metric-enrollments">—</strong><small>当前学习关系</small></article>
+                <article class="metric warning"><span>风险</span><strong id="metric-risk">—</strong><small>需要教学干预</small></article>
+                <article class="metric accent"><span>Token</span><strong id="metric-tokens">—</strong><small>近 30 天总消耗</small></article>
+            </div>
+            <div class="two-column">
+                <article class="panel">
+                    <div class="panel-head"><div><p class="eyebrow">COURSES</p><h3>课程运行状态</h3></div><span class="tag">实时</span></div>
+                    <div id="course-list" class="course-list loading">正在加载课程…</div>
+                </article>
+                <article class="panel governance">
+                    <div class="panel-head"><div><p class="eyebrow">GOVERNANCE</p><h3>AI 治理概览</h3></div></div>
+                    <div class="governance-score"><span id="success-rate">100%</span><small>调用成功率</small></div>
+                    <div class="mini-grid">
+                        <div><strong id="ai-requests">0</strong><span>模型调用</span></div>
+                        <div><strong id="ai-blocked">0</strong><span>安全阻断</span></div>
+                        <div><strong id="ai-latency">0ms</strong><span>平均延迟</span></div>
+                        <div><strong id="ai-cost">¥0.00</strong><span>估算费用</span></div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section id="tutor" class="page">
+            <div class="section-intro"><p class="eyebrow">RAG TUTOR</p><h2>有依据的智能助教</h2><p>检索课程资料、读取学习画像、保留引用与完整 Token 审计。</p></div>
+            <div class="workspace-grid">
+                <article class="panel chat-panel">
+                    <div id="chat-log" class="chat-log">
+                        <div class="message assistant"><span>AI</span><div>你好，我会依据课程资料帮助你理解知识点。你可以问：RAG 服务为什么要保留引用？</div></div>
+                    </div>
+                    <form id="chat-form" class="composer">
+                        <select id="chat-course"><option value="course-java">Java 与 AI 应用开发</option><option value="course-data">数据分析实战</option></select>
+                        <textarea id="chat-question" required maxlength="4000" placeholder="输入课程问题…">RAG 服务为什么要保留引用和调用审计？</textarea>
+                        <button type="submit">发送问题 <span>→</span></button>
+                    </form>
+                </article>
+                <aside class="panel side-info"><p class="eyebrow">PIPELINE</p><h3>本次调用链</h3><ol><li>输入安全与 PII 脱敏</li><li>租户、课程向量过滤</li><li>学习画像工具调用</li><li>上下文组装与生成</li><li>Token 计量和审计落库</li></ol><div id="chat-usage" class="usage-box">尚未发起调用</div></aside>
+            </div>
+        </section>
+
+        <section id="learning" class="page">
+            <div class="section-intro"><p class="eyebrow">ADAPTIVE PATH</p><h2>个性化学习路径</h2><p>规则引擎依据掌握度确定顺序，模型负责解释与学习建议。</p></div>
+            <article class="panel form-panel">
+                <form id="path-form" class="form-grid">
+                    <label>课程<select id="path-course"><option value="course-java">Java 与 AI 应用开发</option></select></label>
+                    <label>每周可用时间<input id="path-minutes" type="number" min="60" max="1200" value="240"></label>
+                    <label class="wide">学习目标<input id="path-goal" maxlength="500" value="四周内具备独立设计并讲解企业级 RAG 服务的能力"></label>
+                    <button type="submit">生成学习路径</button>
+                </form>
+            </article>
+            <div id="path-result" class="result-space empty-state">生成后将在这里显示按掌握度排序的学习计划。</div>
+        </section>
+
+        <section id="grading" class="page">
+            <div class="section-intro"><p class="eyebrow">AI GRADING</p><h2>可复核的形成性评价</h2><p>规则评分与模型反馈分离，低置信度自动进入人工复核。</p></div>
+            <div class="workspace-grid">
+                <article class="panel form-panel">
+                    <form id="grade-form">
+                        <label>作业<select id="grade-assignment"><option value="assignment-001">设计一个 RAG 问答服务</option></select></label>
+                        <label>提交内容<textarea id="grade-answer" required minlength="20" maxlength="20000">系统先按语义切分课程资料并生成向量，查询时按租户过滤后检索和重排。提示词组合检索内容，答案返回引用。调用链记录 traceId、Token、延迟和模型版本，并对提示词注入、个人信息做脱敏与阻断；检索失败时降级为无答案，低置信度进入人工复核。</textarea></label>
+                        <button type="submit">提交 AI 批改</button>
+                    </form>
+                </article>
+                <article id="grade-result" class="panel result-card empty-state">批改结果将显示在这里。</article>
+            </div>
+        </section>
+
+        <section id="risk" class="page">
+            <div class="section-intro"><p class="eyebrow">EARLY WARNING</p><h2>学习风险预警</h2><p>先用可解释特征计算风险，再让模型生成非惩罚性干预建议。</p></div>
+            <div class="risk-actions">
+                <button class="secondary" id="risk-java">评估 Java 课程</button>
+                <button id="risk-data">评估并解释数据课程</button>
+            </div>
+            <div id="risk-result" class="result-space empty-state">选择课程开始评估。</div>
+        </section>
+
+        <section id="audit" class="page">
+            <div class="section-intro"><p class="eyebrow">AI AUDIT</p><h2>模型调用审计</h2><p>提示词只保留脱敏预览与哈希，按 traceId 追踪模型、Token、延迟、风险和费用。</p></div>
+            <div class="metric-grid compact">
+                <article class="metric"><span>请求数</span><strong id="audit-requests">0</strong></article>
+                <article class="metric"><span>输入 Token</span><strong id="audit-input">0</strong></article>
+                <article class="metric"><span>输出 Token</span><strong id="audit-output">0</strong></article>
+                <article class="metric warning"><span>阻断</span><strong id="audit-blocked">0</strong></article>
+            </div>
+            <article class="panel table-panel">
+                <div class="panel-head"><h3>最近调用</h3><button class="text-button" id="refresh-audit">刷新</button></div>
+                <div class="table-wrap"><table><thead><tr><th>时间</th><th>场景</th><th>模型</th><th>Token</th><th>延迟</th><th>风险</th><th>状态</th></tr></thead><tbody id="audit-rows"></tbody></table></div>
+            </article>
+        </section>
+    </main>
+</div>
+<div id="toast" class="toast"></div>
+<script src="/app.js"></script>
+</body>
+</html>

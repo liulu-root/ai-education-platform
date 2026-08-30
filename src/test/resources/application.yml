@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:edu-ai-test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+  flyway:
+    enabled: true
+
+edu:
+  ai:
+    provider: mock
+    monthly-token-budget: 1000000
+  vector:
+    provider: in-memory
+    dimensions: 128
+    embedding-provider: local-hash
+    embedding-model: local-hash-v1

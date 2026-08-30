@@ -1,0 +1,9 @@
+# Merely activates the Milvus REST adapter. It does not install or start Milvus.
+edu:
+  vector:
+    provider: milvus
+    milvus:
+      base-url: ${MILVUS_BASE_URL:http://localhost:19530}
+      token: ${MILVUS_TOKEN:root:Milvus}
+      database: ${MILVUS_DATABASE:default}
+      collection: ${MILVUS_COLLECTION:education_knowledge_chunks}

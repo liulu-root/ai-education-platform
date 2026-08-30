@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: ai-education-platform
+  datasource:
+    url: jdbc:h2:file:./data/edu-ai;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+  flyway:
+    enabled: true
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+edu:
+  ai:
+    provider: ${EDU_AI_PROVIDER:mock}
+    base-url: ${AI_BASE_URL:https://api.openai.com}
+    api-key: ${AI_API_KEY:}
+    chat-model: ${AI_CHAT_MODEL:gpt-4.1-mini}
+    temperature: 0.2
+    timeout-seconds: 45
+    monthly-token-budget: 1000000
+    store-prompt-preview: true
+    prompt-preview-length: 240
+  vector:
+    provider: ${VECTOR_STORE:in-memory}
+    dimensions: 128
+    embedding-provider: ${EMBEDDING_PROVIDER:local-hash}
+    embedding-model: ${EMBEDDING_MODEL:text-embedding-3-small}
+    milvus:
+      base-url: ${MILVUS_BASE_URL:http://localhost:19530}
+      token: ${MILVUS_TOKEN:root:Milvus}
+      database: default
+      collection: education_knowledge_chunks
+
+logging:
+  level:
+    root: INFO
+    com.xiaomi.education: INFO
