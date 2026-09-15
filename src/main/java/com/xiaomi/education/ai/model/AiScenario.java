@@ -5,7 +5,9 @@ public enum AiScenario {
     ASSIGNMENT_GRADING("rubric-grading", "1.0.0"),
     LEARNING_PATH("adaptive-path", "1.0.0"),
     RISK_EXPLANATION("dropout-risk", "1.0.0"),
-    CONTENT_SUMMARY("content-summary", "1.0.0");
+    LEARNER_INTERVENTION("learner-intervention", "1.0.0"),
+    CONTENT_SUMMARY("content-summary", "1.0.0"),
+    CONVERSATION_SUMMARY("conversation-summary", "1.0.0");
 
     private final String promptTemplate;
     private final String promptVersion;

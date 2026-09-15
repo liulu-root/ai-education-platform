@@ -17,12 +17,12 @@ public class LearnerRiskController {
     }
 
     @GetMapping("/assessment")
-    public LearnerRiskService.RiskAssessment assess(@RequestParam String courseId) {
-        return service.assess(courseId, false);
+    public LearnerRiskService.RiskAssessment assess(@RequestParam String learnerId, @RequestParam String courseId) {
+        return service.assessLearner(learnerId, courseId, false);
     }
 
     @PostMapping("/explain")
-    public LearnerRiskService.RiskAssessment explain(@RequestParam String courseId) {
-        return service.assess(courseId, true);
+    public LearnerRiskService.RiskAssessment explain(@RequestParam String learnerId, @RequestParam String courseId) {
+        return service.assessLearner(learnerId, courseId, true);
     }
 }

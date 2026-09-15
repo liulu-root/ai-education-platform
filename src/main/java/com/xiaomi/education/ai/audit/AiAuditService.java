@@ -36,7 +36,7 @@ public class AiAuditService {
                 event.status(), event.riskLevel(), String.join(",", event.riskCodes()), event.errorCode(),
                 Timestamp.from(event.createdAt())
         );
-        if ("SUCCESS".equals(event.status())) {
+        if ("SUCCESS".equals(event.status()) || event.inputTokens() > 0 || event.outputTokens() > 0) {
             accumulateDailyUsage(event);
         }
     }
@@ -48,7 +48,9 @@ public class AiAuditService {
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """,
                 UUID.randomUUID().toString(), event.traceId(), event.tenantId(), event.userId(),
-                violationType, event.riskLevel(), "BLOCK", event.promptHash(), Timestamp.from(event.createdAt())
+                violationType, event.riskLevel(), "BLOCK",
+                event.responseHash() == null ? event.promptHash() : event.responseHash(),
+                Timestamp.from(event.createdAt())
         );
     }
 

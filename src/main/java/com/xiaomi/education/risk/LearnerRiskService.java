@@ -30,8 +30,12 @@ public class LearnerRiskService {
     }
 
     public RiskAssessment assess(String courseId, boolean includeAiExplanation) {
+        return assessLearner(TenantContext.current().userId(), courseId, includeAiExplanation);
+    }
+
+    public RiskAssessment assessLearner(String learnerId, String courseId, boolean includeAiExplanation) {
         var context = TenantContext.current();
-        var features = repository.features(context.tenantId(), context.userId(), courseId);
+        var features = repository.features(context.tenantId(), learnerId, courseId);
         var inactivityDays = features.lastActiveAt() == null ? 30
                 : Math.max(0, Duration.between(features.lastActiveAt(), Instant.now()).toDays());
         var inactivity = Math.min(1.0, inactivityDays / 14.0);
@@ -49,7 +53,7 @@ public class LearnerRiskService {
             var prompt = "课程：" + courseId + "\n风险分：" + score + "\n风险等级：" + level
                     + "\n特征：" + features + "\n主要驱动：" + drivers;
             usage = aiGateway.execute(new AiModelRequest(AiScenario.RISK_EXPLANATION, SYSTEM_PROMPT, prompt,
-                    Map.of("courseId", courseId, "riskScore", score, "riskLevel", level)));
+                    Map.of("learnerId", learnerId, "courseId", courseId, "riskScore", score, "riskLevel", level)));
             explanation = usage.content();
         }
         return new RiskAssessment(courseId, score, level, drivers, features, explanation, usage,

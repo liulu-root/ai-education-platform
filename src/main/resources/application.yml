@@ -13,6 +13,13 @@ spring:
 server:
   port: 8080
   shutdown: graceful
+  servlet:
+    session:
+      timeout: 30m
+      cookie:
+        http-only: true
+        same-site: strict
+        secure: ${SESSION_COOKIE_SECURE:false}
 
 management:
   endpoints:
@@ -37,6 +44,16 @@ edu:
     monthly-token-budget: 1000000
     store-prompt-preview: true
     prompt-preview-length: 240
+    context:
+      context-window-tokens: ${AI_CONTEXT_WINDOW_TOKENS:16384}
+      max-output-tokens: ${AI_MAX_OUTPUT_TOKENS:2048}
+      safety-margin-ratio: 0.10
+      summary-max-tokens: 800
+      recent-turns-to-keep: 2
+      max-overflow-retries: 1
+      retry-input-ratio: 0.75
+      request-timeout-seconds: 60
+      summary-timeout-seconds: 15
   vector:
     provider: ${VECTOR_STORE:in-memory}
     dimensions: 128

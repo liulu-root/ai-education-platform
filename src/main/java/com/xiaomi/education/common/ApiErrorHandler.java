@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.Instant;
 import java.util.List;
@@ -36,6 +38,17 @@ public class ApiErrorHandler {
     ResponseEntity<ApiError> handleConstraint(ConstraintViolationException exception) {
         return ResponseEntity.badRequest()
                 .body(error("VALIDATION_ERROR", exception.getMessage(), List.of()));
+    }
+
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    void handleClientDisconnect(AsyncRequestNotUsableException exception) {
+        log.debug("Streaming client disconnected before the response completed");
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    ResponseEntity<ApiError> handleResourceNotFound(NoResourceFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(error("RESOURCE_NOT_FOUND", "请求的资源不存在", List.of()));
     }
 
     @ExceptionHandler(Exception.class)

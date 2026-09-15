@@ -4,22 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智培云 · AI 教育运营平台</title>
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/data-browser.css">
 </head>
 <body>
-<div class="app-shell">
+<section id="auth-view" class="auth-view" aria-labelledby="login-title">
+    <article class="auth-card">
+        <header class="auth-header">
+            <span class="brand-mark" aria-hidden="true">智</span>
+            <div>
+                <p class="eyebrow">SECURE LEARNING</p>
+                <h1 id="login-title">登录智培云</h1>
+                <p>身份由服务器验证，角色决定可访问的教育场景。</p>
+            </div>
+        </header>
+
+        <form id="login-form" novalidate>
+            <label>邮箱
+                <input id="login-email" name="email" type="email" autocomplete="username"
+                       value="linxiao@example.com" maxlength="256" required>
+            </label>
+            <label>密码
+                <input id="login-password" name="password" type="password" autocomplete="current-password"
+                       value="Demo123!" minlength="8" maxlength="128" required>
+            </label>
+            <button type="submit" disabled>建立安全会话…</button>
+            <p id="login-error" class="auth-error" role="alert" aria-live="polite"></p>
+        </form>
+
+        <div class="demo-accounts" aria-label="演示账号">
+            <p>选择演示身份</p>
+            <button type="button" class="demo-account" data-email="linxiao@example.com">
+                <strong>学习者</strong><small>助教 · 学习路径 · 作业提交</small>
+            </button>
+            <button type="button" class="demo-account" data-email="wang@example.com">
+                <strong>教师</strong><small>运营 · 风险 · 干预审批</small>
+            </button>
+            <button type="button" class="demo-account" data-email="audit@example.com">
+                <strong>审计员</strong><small>运营 · AI 审计 · 指标</small>
+            </button>
+        </div>
+
+        <p class="security-note">演示密码均为 <code>Demo123!</code>。会话使用 HttpOnly Cookie，并由 CSRF Token 保护写请求。</p>
+    </article>
+</section>
+
+<div id="app-shell" class="app-shell" hidden>
     <aside class="sidebar">
         <div class="brand">
             <span class="brand-mark">智</span>
             <div><strong>智培云</strong><small>AI Learning Ops</small></div>
         </div>
         <nav>
-            <button class="nav-item active" data-target="overview"><span>◫</span>运营总览</button>
-            <button class="nav-item" data-target="tutor"><span>✦</span>智能助教</button>
-            <button class="nav-item" data-target="learning"><span>⌁</span>学习路径</button>
-            <button class="nav-item" data-target="grading"><span>✓</span>作业批改</button>
-            <button class="nav-item" data-target="risk"><span>△</span>风险预警</button>
-            <button class="nav-item" data-target="audit"><span>◎</span>AI 审计</button>
+            <button class="nav-item active" data-target="overview" data-roles="INSTRUCTOR,AUDITOR"><span>◫</span>运营总览</button>
+            <button class="nav-item" data-target="tutor" data-roles="LEARNER"><span>✦</span>智能助教</button>
+            <button class="nav-item" data-target="learning" data-roles="LEARNER"><span>⌁</span>学习路径</button>
+            <button class="nav-item" data-target="grading" data-roles="LEARNER"><span>✓</span>作业批改</button>
+            <button class="nav-item" data-target="risk" data-roles="INSTRUCTOR"><span>△</span>风险预警</button>
+            <button class="nav-item" data-target="interventions" data-roles="INSTRUCTOR"><span>⚑</span>干预审批</button>
+            <button class="nav-item" data-target="audit" data-roles="AUDITOR"><span>◎</span>AI 审计</button>
+            <button class="nav-item" data-target="data-browser" data-roles="LEARNER,INSTRUCTOR,AUDITOR" title="数据查看" aria-label="数据查看"><span aria-hidden="true">▤</span>数据查看</button>
         </nav>
         <div class="sidebar-foot">
             <span class="status-dot"></span>
@@ -33,7 +78,11 @@
                 <p class="eyebrow">未来技能培训中心</p>
                 <h1 id="page-title">运营总览</h1>
             </div>
-            <div class="profile"><span>LX</span><div><strong>林晓</strong><small>学习者 · learner-001</small></div></div>
+            <div class="profile">
+                <span id="profile-avatar">—</span>
+                <div><strong id="profile-name">已登录用户</strong><small id="profile-meta">正在加载身份…</small></div>
+                <button id="logout-button" class="logout-button" type="button">退出</button>
+            </div>
         </header>
 
         <section id="overview" class="page active">
@@ -122,6 +171,47 @@
             <div id="risk-result" class="result-space empty-state">选择课程开始评估。</div>
         </section>
 
+        <section id="interventions" class="page">
+            <div class="section-intro">
+                <p class="eyebrow">HUMAN IN THE LOOP</p>
+                <h2>敏感工具执行审批</h2>
+                <p>AI 生成并完成格式与安全后置检查后，通知工具会在真正发送前暂停，等待教师批准或拒绝。</p>
+            </div>
+            <div class="intervention-flow" aria-label="敏感工具审批链路">
+                <div class="flow-step"><span>1</span><div><strong>模型生成</strong><small>形成学习干预建议</small></div></div>
+                <div class="flow-step"><span>2</span><div><strong>后置检查</strong><small>补全格式并扫描安全风险</small></div></div>
+                <div class="flow-step active"><span>3</span><div><strong>暂停审批</strong><small>敏感工具尚未执行</small></div></div>
+                <div class="flow-step"><span>4</span><div><strong>受控执行</strong><small>仅批准后发送通知</small></div></div>
+            </div>
+            <div class="workspace-grid intervention-workspace">
+                <article class="panel form-panel">
+                    <div class="panel-head"><div><p class="eyebrow">CREATE REQUEST</p><h3>发起学习干预</h3></div><span class="tag">教师可见</span></div>
+                    <form id="intervention-form" class="form-grid">
+                        <label>学习者<input id="intervention-learner" value="learner-001" maxlength="64" required></label>
+                        <label>课程<select id="intervention-course"><option value="course-java">Java 与 AI 应用开发</option><option value="course-data">数据分析实战</option></select></label>
+                        <label class="wide">干预目标<textarea id="intervention-objective" required minlength="10" maxlength="1000">针对近期学习进度下降，发送一条友善、非惩罚性的学习提醒，并提供可执行的下一步建议。</textarea></label>
+                        <button type="submit">生成通知并申请审批</button>
+                    </form>
+                </article>
+                <aside class="panel postcheck-panel">
+                    <p class="eyebrow">POST-MODEL MIDDLEWARE</p><h3>输出后置处理</h3>
+                    <p>在进入审批队列前，Middleware 会先统一通知格式，并检查敏感信息、不当措辞和安全边界。</p>
+                    <div class="check-list" aria-label="后置检查规则"><span><i>✓</i> 通知结构与长度</span><span><i>✓</i> 非惩罚性表达</span><span><i>✓</i> PII 与敏感内容</span></div>
+                    <div id="intervention-created" class="latest-request empty-state compact-empty">尚未发起干预请求。</div>
+                </aside>
+            </div>
+            <div class="approval-board">
+                <article class="panel approval-panel">
+                    <div class="panel-head"><div><p class="eyebrow">APPROVAL QUEUE</p><h3>工具执行审批</h3></div><button class="text-button" id="refresh-interventions" type="button">刷新</button></div>
+                    <div id="approval-list" class="approval-list empty-state" aria-live="polite">正在加载审批队列…</div>
+                </article>
+                <article class="panel notification-panel">
+                    <div class="panel-head"><div><p class="eyebrow">DELIVERY LOG</p><h3>已发送通知</h3></div></div>
+                    <div id="notification-list" class="notification-list empty-state" aria-live="polite">正在加载发送记录…</div>
+                </article>
+            </div>
+        </section>
+
         <section id="audit" class="page">
             <div class="section-intro"><p class="eyebrow">AI AUDIT</p><h2>模型调用审计</h2><p>提示词只保留脱敏预览与哈希，按 traceId 追踪模型、Token、延迟、风险和费用。</p></div>
             <div class="metric-grid compact">
@@ -135,9 +225,33 @@
                 <div class="table-wrap"><table><thead><tr><th>时间</th><th>场景</th><th>模型</th><th>Token</th><th>延迟</th><th>风险</th><th>状态</th></tr></thead><tbody id="audit-rows"></tbody></table></div>
             </article>
         </section>
+        <section id="data-browser" class="page" aria-label="数据查看">
+            <form id="data-search-form" class="data-toolbar">
+                <label>数据表<select id="data-table" disabled><option>正在加载…</option></select></label>
+                <label class="data-search-label">关键词<input id="data-search" type="search" maxlength="200" placeholder="搜索字段内容" autocomplete="off"></label>
+                <button type="submit">搜索</button>
+                <button id="data-refresh" class="data-icon" type="button" title="刷新数据" aria-label="刷新数据">↻</button>
+            </form>
+            <div class="data-heading"><div><h2 id="data-table-title">数据记录</h2><code id="data-table-name"></code></div><span class="data-readonly">只读</span></div>
+            <p id="data-status" role="status" aria-live="polite"></p>
+            <div id="data-grid" class="data-grid" tabindex="0" aria-label="数据表格" aria-busy="false">
+                <table><thead id="data-columns"></thead><tbody id="data-rows"></tbody></table>
+            </div>
+            <footer class="data-pagination">
+                <label>每页<select id="data-size"><option value="25">25 条</option><option value="50">50 条</option><option value="100">100 条</option></select></label>
+                <span id="data-page-info">第 1 / 1 页</span>
+                <button id="data-prev" class="data-icon" type="button" title="上一页" aria-label="上一页" disabled>←</button>
+                <button id="data-next" class="data-icon" type="button" title="下一页" aria-label="下一页" disabled>→</button>
+            </footer>
+            <dialog id="data-detail" aria-labelledby="data-detail-title">
+                <header><h2 id="data-detail-title">记录详情</h2><button id="data-close" class="data-icon" type="button" title="关闭详情" aria-label="关闭详情">×</button></header>
+                <dl id="data-detail-fields"></dl>
+            </dialog>
+        </section>
     </main>
 </div>
 <div id="toast" class="toast"></div>
+<script src="/data-browser.js"></script>
 <script src="/app.js"></script>
 </body>
 </html>

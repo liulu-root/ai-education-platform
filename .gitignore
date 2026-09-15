@@ -7,3 +7,4 @@ logs/
 .env
 *.log
 node_modules/
+.codegraph/

@@ -13,6 +13,11 @@ public record AiCallResult(
         int cachedTokens,
         BigDecimal estimatedCost,
         long latencyMs,
-        List<String> riskCodes
+        List<String> riskCodes,
+        List<String> middlewareChecks
 ) {
+    public AiCallResult {
+        riskCodes = List.copyOf(riskCodes);
+        middlewareChecks = List.copyOf(middlewareChecks);
+    }
 }

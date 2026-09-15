@@ -5,10 +5,17 @@ import com.xiaomi.education.common.ApiException;
 import com.xiaomi.education.grading.GradingService;
 import com.xiaomi.education.learning.LearningPathService;
 import com.xiaomi.education.risk.LearnerRiskService;
+import com.xiaomi.education.tenant.TenantContext;
 import com.xiaomi.education.tutor.TutorService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -21,6 +28,7 @@ class PlatformIntegrationTest {
     private final LearningPathService learningPathService;
     private final LearnerRiskService riskService;
     private final AiAuditService auditService;
+    private TenantContext.Scope tenantScope;
 
     @Autowired
     PlatformIntegrationTest(
@@ -37,6 +45,16 @@ class PlatformIntegrationTest {
         this.auditService = auditService;
     }
 
+    @BeforeEach
+    void openAuthenticatedTenantContext() {
+        tenantScope = TenantContext.open(new TenantContext("tenant-demo", "learner-001", "LEARNER"));
+    }
+
+    @AfterEach
+    void closeAuthenticatedTenantContext() {
+        tenantScope.close();
+    }
+
     @Test
     void tutorUsesKnowledgeAndRecordsTokenAudit() {
         var result = tutorService.chat(null, "course-java", "RAG 服务为什么需要引用和 AI 调用审计？");
@@ -47,6 +65,51 @@ class PlatformIntegrationTest {
         assertThat(result.usage().inputTokens()).isPositive();
         assertThat(auditService.recentEvents("tenant-demo", 10))
                 .anyMatch(event -> "TUTOR_CHAT".equals(event.get("scenario")));
+    }
+
+    @Test
+    void tutorEmitsMultipleDeltasBeforeCompletingTheStream() throws Exception {
+        var deltas = new CopyOnWriteArrayList<String>();
+        var start = new AtomicReference<TutorService.TutorStreamStart>();
+        var completed = new AtomicReference<TutorService.TutorResponse>();
+        var failure = new AtomicReference<Throwable>();
+
+        var stream = tutorService.chatStream(
+                null,
+                "course-java",
+                "请用课程资料解释 RAG 的引用为什么重要",
+                new TutorService.TutorStreamListener() {
+                    @Override
+                    public void onStart(TutorService.TutorStreamStart event) {
+                        start.set(event);
+                    }
+
+                    @Override
+                    public void onDelta(String delta) {
+                        deltas.add(delta);
+                    }
+
+                    @Override
+                    public void onComplete(TutorService.TutorResponse response) {
+                        completed.set(response);
+                    }
+
+                    @Override
+                    public void onError(Throwable exception) {
+                        failure.set(exception);
+                    }
+                }
+        );
+
+        var result = stream.completion().get(5, TimeUnit.SECONDS);
+
+        assertThat(failure.get()).isNull();
+        assertThat(start.get()).isNotNull();
+        assertThat(start.get().conversationId()).isEqualTo(result.conversationId());
+        assertThat(deltas).hasSizeGreaterThan(1);
+        assertThat(String.join("", deltas)).isEqualTo(result.answer());
+        assertThat(completed.get()).isEqualTo(result);
+        assertThat(result.usage().inputTokens()).isPositive();
     }
 
     @Test
